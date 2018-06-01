@@ -26,7 +26,7 @@ require([
     var head = cm.getCursor();
     var doc = cm.getDoc();
     if(islatex(cm)){
-    doc.replaceRange('\sum_{<++>}^{<++>}{<++>}',head);
+    doc.replaceRange('\\sum_{<++>}^{<++>}{<++>}',head);
     CodeMirror.Vim.handleKey(cm, '<Esc>');
     CodeMirror.Vim.handleKey(cm, '3F<');
     CodeMirror.Vim.handleKey(cm, 'c');
@@ -34,6 +34,114 @@ require([
     }
    else{
      doc.replaceRange(';s',head)
+   }
+  });
+  CodeMirror.Vim.defineAction('latex_power_up', function(cm) {
+    var head = cm.getCursor();
+    var doc = cm.getDoc();
+    if(islatex(cm)){
+    doc.replaceRange('^{<++>}<++>',head);
+    CodeMirror.Vim.handleKey(cm, '<Esc>');
+    CodeMirror.Vim.handleKey(cm, '2F<');
+    CodeMirror.Vim.handleKey(cm, 'c');
+    CodeMirror.Vim.handleKey(cm, '4l');
+    }
+   else{
+     doc.replaceRange(';p',head);
+   }
+  });
+  CodeMirror.Vim.defineAction('latex_power_down', function(cm) {
+    var head = cm.getCursor();
+    var doc = cm.getDoc();
+    if(islatex(cm)){
+    doc.replaceRange('_{<++>}<++>',head);
+    CodeMirror.Vim.handleKey(cm, '<Esc>');
+    CodeMirror.Vim.handleKey(cm, '2F<');
+    CodeMirror.Vim.handleKey(cm, 'c');
+    CodeMirror.Vim.handleKey(cm, '4l');
+    }
+   else{
+     doc.replaceRange(';u',head);
+   }
+  });
+  CodeMirror.Vim.defineAction('latex_math', function(cm) {
+    var head = cm.getCursor();
+    var doc = cm.getDoc();
+    if(islatex(cm)){
+    doc.replaceRange('$<++>$<++>',head);
+    CodeMirror.Vim.handleKey(cm, '<Esc>');
+    CodeMirror.Vim.handleKey(cm, '2F<');
+    CodeMirror.Vim.handleKey(cm, 'c');
+    CodeMirror.Vim.handleKey(cm, '4l');
+    }
+   else{
+     doc.replaceRange(';m',head);
+   }
+  });
+  CodeMirror.Vim.defineAction('python_for', function(cm) {
+    var head = cm.getCursor();
+    var doc = cm.getDoc();
+    if(!islatex(cm)){
+    doc.replaceRange('for <++> in <++>:\n', head);
+    head.line = head.line+1;
+    doc.setCursor(head)
+    var i;
+    for(i = 0; i< head.ch; i++){
+      doc.replaceRange(' ',head)
+    }
+    doc.replaceRange('    <++>',head);
+    CodeMirror.Vim.handleKey(cm, '<Esc>');
+    CodeMirror.Vim.handleKey(cm, 'k');
+    CodeMirror.Vim.handleKey(cm, '$');
+    CodeMirror.Vim.handleKey(cm, '2F<');
+    CodeMirror.Vim.handleKey(cm, 'c');
+    CodeMirror.Vim.handleKey(cm, '4l');
+    }
+   else{
+     doc.replaceRange(';f',head)
+   }
+  });
+  CodeMirror.Vim.defineAction('python_import', function(cm) {
+    if(!islatex(cm)){
+    var head = cm.getCursor();
+   // console.log(head.ch)
+   // console.log(head.line)
+   // console.log(head)
+    var doc = cm.getDoc();
+    doc.replaceRange('from <++> import <++>:\n<++>',head);
+    CodeMirror.Vim.handleKey(cm, '<Esc>');
+    CodeMirror.Vim.handleKey(cm, 'k');
+    CodeMirror.Vim.handleKey(cm, '$');
+    CodeMirror.Vim.handleKey(cm, '2F<');
+    CodeMirror.Vim.handleKey(cm, 'c');
+    CodeMirror.Vim.handleKey(cm, '4l');
+    }
+   else{
+    var head = cm.getCursor();
+    var doc = cm.getDoc();
+    doc.replaceRange('\\begin{itemize}\n <++>\n\\end{itemize}\n<++>',head);
+    CodeMirror.Vim.handleKey(cm, '<Esc>');
+    CodeMirror.Vim.handleKey(cm, '2k');
+    CodeMirror.Vim.handleKey(cm, '$');
+    CodeMirror.Vim.handleKey(cm, 'F<');
+    CodeMirror.Vim.handleKey(cm, 'c');
+    CodeMirror.Vim.handleKey(cm, '4l');
+   }
+  });
+  CodeMirror.Vim.defineAction('python_import_sim', function(cm) {
+    var head = cm.getCursor();
+    var doc = cm.getDoc();
+    if(!islatex(cm)){
+    doc.replaceRange('import <++>\n<++>',head);
+    CodeMirror.Vim.handleKey(cm, '<Esc>');
+    CodeMirror.Vim.handleKey(cm, 'k');
+    CodeMirror.Vim.handleKey(cm, '$');
+    CodeMirror.Vim.handleKey(cm, 'F<');
+    CodeMirror.Vim.handleKey(cm, 'c');
+    CodeMirror.Vim.handleKey(cm, '4l');
+    }
+   else{
+     doc.replaceRange("`i",head)
    }
   });
   function islatex(cm){
@@ -73,6 +181,12 @@ require([
   CodeMirror.Vim.mapCommand("<C-h>", "action", "[i]<C-h>", {}, { "context": "insert" });
   CodeMirror.Vim.mapCommand(";s", "action", "latex-summation", {}, { "context": "insert" });
   CodeMirror.Vim.mapCommand(";j", "action", "move_next", {}, { "context": "insert" });
+  CodeMirror.Vim.mapCommand(";f", "action", "python_for", {}, { "context": "insert" });
+  CodeMirror.Vim.mapCommand(";i", "action", "python_import", {}, { "context": "insert" });
+  CodeMirror.Vim.mapCommand("`i", "action", "python_import_sim", {}, { "context": "insert" });
+  CodeMirror.Vim.mapCommand(";p", "action", "latex_power_up", {}, { "context": "insert" });
+  CodeMirror.Vim.mapCommand(";u", "action", "latex_power_down", {}, { "context": "insert" });
+  CodeMirror.Vim.mapCommand(";m", "action", "latex_math", {}, { "context": "insert" });
 
    console.log("its executing atleast this as well again");
 });
